@@ -1,0 +1,169 @@
+
+<title>Form</title>
+<!-- <link rel="stylesheet" href="http://youtube.local/assets/dcode.css"> -->
+<link rel="stylesheet" href="style.css">
+<script type="text/javascript" src="index.js"></script>
+
+<body>
+    <h1>AJAX Forms - Web - dcode</h1>
+    <div class="float-container">
+      <div class="container2">
+        <label for="Name"><b>Name</b></label>
+        <input type="text" placeholder="Enter Name" name="name" id="name" />
+
+        <br />
+
+        <label for="mail"><b>Email</b></label>
+        <input type="text" placeholder="Enter Email" name="mail" id="mail" />
+
+        <br />
+
+        <label for="mnumber"><b>Mobile Number</b></label>
+        <input type="text" size="10" placeholder="Enter Mobile Number" name="mnumber" id="mnumber" pattern="[0-9]" />
+        <!-- <input type="tel" id="mnumber" name="mnumber" placeholder="nter Mobile Number" pattern="[0-9]" > -->
+
+        <br />
+
+        <label for="age"><b>Age</b></label>
+        <input type="text" placeholder="Enter Age" name="age" id="age" />
+
+        <br />
+
+        <label><b>Gender</b></label>
+        <label
+          >Male
+          <input type="radio" id="gender" name="gender" value="1" />
+          <!-- <span class="checkmark"></span> -->
+        </label>
+        <label
+          >Female
+          <input type="radio" id="gender" name="gender" value="1" />
+          <!-- <span class="checkmark"></span> -->
+        </label>
+
+        <br />
+
+        <p class="formfield">
+          <label for="addlab"><b>Address</b></label>
+          <textarea id="address" name="address" class="textareastyle" name="story" rows="5" cols="33" placeholder="Enter you Address..."></textarea>
+        </p>
+      </div>
+
+      <div class="container2">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+        <image id="profileImage" style="width: 110px; height: 150px; border: 3px solid #476685;"  src="photo2.png"/>
+        <input id="imageUpload" type="file" name="profile_photo" placeholder="Photo" capture/>
+        <!-- <input type="button" value="Upload Image" name="submit"> -->
+      </div>
+    </div>
+    <div class="educontainer">
+      <table width="100%" class="tabcontainer1">
+        <tr>
+          <th colspan="4"><h2>Education Details</h2></th>
+          <th colspan="2">
+            <button id="addQ" name="addQ" onclick="insRow()">
+              Add Qualification
+            </button>
+          </th>
+        </tr>
+      </table>
+      <table id="Qtable" class="tabcontainer">
+        <tr>
+          <th>S.No</th>
+          <th>COURSE</th>
+          <th>School / College/ University</th>
+          <th>Year</th>
+          <th>Percentage</th>
+          <th>Action</th>
+        </tr>
+        <tr>
+          <td>1</td>
+          <td><input type="text" id="course" name="course" /></td>
+          <td><input type="text" id="school" name="school" /></td>
+          <td><input type="text" id="year" name="year" /></td>
+          <td><input type="text" id="percentage" name="percentage" /></td>
+          <td><button onclick="deleteRow(this)">Delete</button></td>
+        </tr>
+      </table>
+      <input type="hidden" id="rownum" name="rownum" value="">
+    </div>
+    <div class="container4">
+      <button id="registerbtn" type="submit" class="registerbtn">Submit</button>
+    </div>
+    <script>
+        const form = {
+            name: document.getElementById('name'),
+            mail: document.getElementById('mail'),
+            mnumber: document.getElementById('mnumber'),
+            age: document.getElementById('age'),
+            gender: document.getElementById('gender'),
+            address:document.getElementById('address'),
+            submit: document.getElementById('registerbtn'),
+            messages: document.getElementById('form-messages'),
+            rownum: document.getElementById('rownum'),
+            school: document.getElementById('school'),
+            course: document.getElementById('course'),
+            percentage: document.getElementById('percentage'),
+            year: document.getElementById('year')
+        };
+
+        //console.log(p);
+        form.submit.addEventListener('click', () => {
+            const request = new XMLHttpRequest();
+
+
+            const coursearr = []; const schoolarr = []; const yeararr = []; const percentagearr = [];
+            const rownum = form.rownum.value;
+
+            coursearr[0] = document.getElementById("course").value;
+            schoolarr[0] = document.getElementById("school").value;
+            yeararr[0] = document.getElementById("year").value;
+            percentagearr[0] = document.getElementById("percentage").value;
+            for(let r=2; r<=rownum; r++){
+              const t = document.getElementById("course"+r);
+              const t1 = document.getElementById("school"+r);
+              const t2 = document.getElementById("year"+r);
+              const t3 = document.getElementById("percentage"+r);
+              //course[r] = t.value;
+              //alert(document.getElementById("course"+r).value);
+            if (t != null)
+              coursearr[r-1] = t.value;
+            else
+              coursearr[r-1] = null;
+            if(t1 != null)
+              schoolarr[r-1] = t1.value;
+            else
+              schoolarr[r-1] = null;
+            if(t2 != null-1)
+              yeararr[r-1] = t2.value;
+            else
+              yeararr[r-1] = null;
+            if(t3 != null)
+              percentagearr[r-1] = t3.value;
+            else
+              percentagearr[r-1] = null;
+            }
+                request.onload = () => {
+                let responseObject = null;
+                try {
+                    responseObject = JSON.parse(request.responseText);
+                } catch (e) {
+                    console.error('Could not parse JSON!');
+                }
+
+                if (responseObject) {
+                    handleResponse(responseObject);
+                }
+            };
+
+            const requestData = `name=${form.name.value}&mail=${form.mail.value}&mnumber=${form.mnumber.value}&age=${form.age.value}&gender=${form.gender.value}&address=${form.address.value}&course=${form.course.value}&rownum=${form.rownum.value}&school=${form.school.value}&year=${form.year.value}&percentage=${form.percentage.value}&coursearr=${coursearr}&schoolarr=${schoolarr}&yeararr=${yeararr}&percentagearr=${percentagearr}`;
+
+            request.open('post', 'check-login.php');
+            request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+            request.send(requestData);
+        });
+
+
+
+    </script>
+</body>
